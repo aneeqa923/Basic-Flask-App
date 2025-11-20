@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask App</title>
+</head>
+<body>
+  <nav style="background-color: #007bff; padding: 10px;">
+      <a href="/" style="color: white; margin-right: 20px;">Home</a>
+      <span style="float: right; color: white;">
+          Name: {{ name }} | Roll No: {{ rollno }}
+      </span>
+  </nav>
+
+  <div style="margin: 40px;">
+      <h1>{{ heading }}</h1>
+
+      <button onclick="openAddModal()" style="float:right; margin-bottom:10px;">➕ Add New User</button>
+
+
+      <table border="1" cellpadding="10" cellspacing="0">
+        <tr style="background-color: #f2f2f2;">
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.city }}</td>
+            <td>
+                <button onclick="openModal('{{ user.id }}', '{{ user.name }}', '{{ user.email }}', '{{ user.city }}')">✏️ Update</button>
+                <button type="button" onclick="openDeleteModal('{{ user.id }}')">🗑️ Delete</button>
+
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">No users found.</td>
+        </tr>
+        {% endfor %}
+      </table>
+  </div>
+
+  <!-- Add New User Modal -->
+<div id="addModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background-color:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
+  <div style="background-color:white; display:inline-block; padding:20px; border-radius:10px; width:300px;">
+      <h3>Add New User</h3>
+
+      <form id="addForm" method="POST" action="/add_user">
+          <label>Name:</label><br>
+          <input type="text" name="name" required><br><br>
+
+          <label>Email:</label><br>
+          <input type="email" name="email" required><br><br>
+
+          <label>City:</label><br>
+          <input type="text" name="city" required><br><br>
+
+          <button type="submit">Add</button>
+          <button type="button" onclick="closeAddModal()">Cancel</button>
+      </form>
+  </div>
+</div>
+
+<script>
+  // ADD MODAL FUNCTIONS
+  function openAddModal() {
+      document.getElementById('addModal').style.display = 'block';
+  }
+
+  function closeAddModal() {
+      document.getElementById('addModal').style.display = 'none';
+  }
+</script>
+
+  <!-- Delete Confirmation Modal -->
+<div id="deleteModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background-color:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
+  <div style="background-color:white; display:inline-block; padding:20px; border-radius:10px; width:300px;">
+      <h3>Confirm Delete</h3>
+      <p>Are you sure you want to delete this user?</p>
+
+      <form id="deleteForm" method="POST">
+          <button type="submit" style="background-color:red; color:white;">Yes, Delete</button>
+          <button type="button" onclick="closeDeleteModal()">Cancel</button>
+      </form>
+  </div>
+</div>
+
+<script>
+  // DELETE MODAL FUNCTIONS
+  function openDeleteModal(id) {
+      document.getElementById('deleteModal').style.display = 'block';
+      document.getElementById('deleteForm').action = '/delete/' + id;
+  }
+
+  function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+  }
+</script>
+
+
+  <!-- Popup Modal -->
+  <div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+       background-color:rgba(0,0,0,0.5); text-align:center; padding-top:100px;">
+    <div style="background-color:white; display:inline-block; padding:20px; border-radius:10px; width:300px;">
+        <h3>Update User</h3>
+        <form id="updateForm" method="POST">
+            <input type="hidden" id="userId" name="id">
+
+            <label>Name:</label><br>
+            <input type="text" id="userName" name="name"><br><br>
+
+            <label>Email:</label><br>
+            <input type="email" id="userEmail" name="email"><br><br>
+
+            <label>City:</label><br>
+            <input type="text" id="userCity" name="city"><br><br>
+
+            <button type="submit">Update</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function openModal(id, name, email, city) {
+        document.getElementById('updateModal').style.display = 'block';
+        document.getElementById('userId').value = id;
+        document.getElementById('userName').value = name;
+        document.getElementById('userEmail').value = email;
+        document.getElementById('userCity').value = city;
+        document.getElementById('updateForm').action = '/update/' + id;
+    }
+
+    function closeModal() {
+        document.getElementById('updateModal').style.display = 'none';
+    }
+  </script>
+</body>
+
+</html>
